@@ -10,7 +10,7 @@ router.get('/', function (req, res, next) {
 router.get('/tutors', function (req, res, next) {
 
     Label.find()
-        .where('type').equals('N')
+        .where('type').equals('N').populate('parentId')
         .then((data)=> {
             res.json(data);
         }).catch((err)=> {
@@ -21,7 +21,7 @@ router.get('/tutors', function (req, res, next) {
 router.get('/rooms', function (req, res, next) {
 
     Label.find()
-        .where('type').equals('S')
+        .where('type').equals('S').populate('parentId')
         .then((data)=> {
             res.json(data);
         }).catch((err)=> {
@@ -31,7 +31,7 @@ router.get('/rooms', function (req, res, next) {
 /* GET home page. */
 router.get('/groups', function (req, res, next) {
     Label.find()
-        .where('type').equals('G')
+        .where('type').equals('G').populate('parentId')
         .then((data)=> {
             res.json(data);
         }).catch((err)=> {
