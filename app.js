@@ -9,18 +9,7 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 
 var app = express();
-var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/uek-etl');
-var db = mongoose.connection;
-
-db.on('error', () => {
-    console.error.bind(console, 'connection error:');
-})
-;
-db.once('open', () => {
-    console.log('Connection to database established.');
-})
-;
+// 
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
