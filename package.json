@@ -1,9 +1,11 @@
 {
   "name": "uekplan-server",
-  "version": "0.0.0",
+  "version": "0.1.0",
+  "description": "uekplan.pl API server",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www --harmony"
+    "start": "node ./bin/www --harmony",
+    "apidoc": "apidoc -i routes/"
   },
   "dependencies": {
     "body-parser": "~1.13.2",

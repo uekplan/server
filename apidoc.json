@@ -1,0 +1,8 @@
+{
+  "name": "uekplan-server",
+  "version": "0.1.0",
+  "description": "uekplan.pl API documentation",
+  "title": "uekplan.pl API",
+  "url" : "https://api.uekplan.pl",
+  "sampleUrl": "https://api.uekplan.pl"
+}
