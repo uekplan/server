@@ -321,6 +321,7 @@ router.get('/exceptions', function (req, res, next) {
  * @apiGroup Timetable
  *
  * @apiSuccess (200) {Object[]}  events                    Events list
+ * @apiSuccess (200) {Number}    events.id                 Event id
  * @apiSuccess (200) {Date}      events.date               Event date
  * @apiSuccess (200) {Number}    events.day                Event day number
  * @apiSuccess (200) {String}    events.from               Event time start
