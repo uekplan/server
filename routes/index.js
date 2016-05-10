@@ -29,28 +29,17 @@ router.get('/', function (req, res, next) {
 router.get('/labels', function (req, res, next) {
 
     Label.findAll({
-        attributes: [
-            'id',
-            'timetableId',
-            'key',
-            'value',
-            'type',
-            'moodleId',
-            'parentId'
-        ],
-        where: {
-            type: {
-                // chceck in etl if needed
-                $ne: '?'
-            }
-        }
+        attributes: ['id', 'timetableId', 'key', 'value', 'type', 'moodleId', 'parentId'],
+        // chceck in etl if needed
+        where: {type: {$ne: '?'}},
+        order: ['key']
     })
         .then((data)=> {
             res.json(data);
         })
         .catch((err)=> {
             res.status(500).send();
-        })
+        });
 });
 /**
  * @api {get} /tutors Tutors list
@@ -64,22 +53,17 @@ router.get('/labels', function (req, res, next) {
  * @apiSuccess (200) {Number}    tutors.timetableId   Tutor timetableId from http://planzajec.uek.krakow.pl
  * @apiSuccess (200) {String}    tutors.key           Tutor default name from http://planzajec.uek.krakow.pl
  * @apiSuccess (200) {String}    tutors.value         Tutor label from http://planzajec.uek.krakow.pl or custom
+ * @apiSuccess (200) {String}    tutors.forename      Tutor forename extracted
+ * @apiSuccess (200) {String}    tutors.surname       Tutor surname extracted
+ * @apiSuccess (200) {String}    tutors.prefix        Tutor prefix extracted
  * @apiSuccess (200) {Number}    tutors.moodleId      Tutor id to his account in https://e-uczelnia.uek.krakow.pl
  * @apiSuccess (200) {Number}    tutors.parentId      Tutor parent id
  */
 router.get('/tutors', function (req, res, next) {
     Label.findAll({
-        attributes: [
-            'id',
-            'timetableId',
-            'key',
-            'value',
-            'moodleId',
-            'parentId'
-        ],
-        where: {
-            type: 'N'
-        }
+        attributes: ['id', 'timetableId', 'key', 'value', 'forename', 'surname', 'prefix', 'moodleId', 'parentId'],
+        where: {type: 'N'},
+        order: ['surname']
     })
         .then((data)=> {
             res.json(data);
@@ -104,16 +88,9 @@ router.get('/tutors', function (req, res, next) {
  */
 router.get('/rooms', function (req, res, next) {
     Label.findAll({
-        attributes: [
-            'id',
-            'timetableId',
-            'key',
-            'value',
-            'parentId'
-        ],
-        where: {
-            type: 'S'
-        }
+        attributes: ['id', 'timetableId', 'key', 'value', 'parentId'],
+        where: {type: 'S'},
+        order: ['key']
     })
         .then((data)=> {
             res.json(data);
@@ -138,16 +115,9 @@ router.get('/rooms', function (req, res, next) {
  */
 router.get('/groups', function (req, res, next) {
     Label.findAll({
-        attributes: [
-            'id',
-            'timetableId',
-            'key',
-            'value',
-            'parentId'
-        ],
-        where: {
-            type: 'G'
-        }
+        attributes: ['id', 'timetableId', 'key', 'value', 'parentId'],
+        where: {type: 'G'},
+        order: ['key']
     })
         .then((data)=> {
             res.json(data);
@@ -171,14 +141,9 @@ router.get('/groups', function (req, res, next) {
  */
 router.get('/buildings', function (req, res, next) {
     Label.findAll({
-        attributes: [
-            'id',
-            'key',
-            'value'
-        ],
-        where: {
-            type: 'B'
-        }
+        attributes: ['id', 'key', 'value'],
+        where: {type: 'B'},
+        order: ['key']
     })
         .then((data)=> {
             res.json(data);
@@ -201,14 +166,9 @@ router.get('/buildings', function (req, res, next) {
  */
 router.get('/fields', function (req, res, next) {
     Label.findAll({
-        attributes: [
-            'id',
-            'key',
-            'value'
-        ],
-        where: {
-            type: 'F'
-        }
+        attributes: ['id', 'key', 'value'],
+        where: {type: 'F'},
+        order: ['key']
     })
         .then((data)=> {
             res.json(data);
@@ -233,7 +193,8 @@ router.get('/fields', function (req, res, next) {
 router.get('/activities', function (req, res, next) {
     Label.findAll({
         attributes: ['id', 'timetableId', 'key', 'value', 'type', 'moodleId', 'parentId'],
-        where: {type: 'A'}
+        where: {type: 'A'},
+        order: ['key']
     })
         .then((data)=> {
             res.json(data);
@@ -288,13 +249,15 @@ router.get('/types', function (req, res, next) {
 router.get('/notes', function (req, res, next) {
     Label.findAll({
         attributes: ['id', 'timetableId', 'key', 'value', 'type', 'moodleId', 'parentId'],
-        where: {type: 'I'}
+        where: {type: 'I'},
+        order: ['key']
     })
         .then((data)=> {
             res.json(data);
-        }).catch((err)=> {
-        res.status(500).send();
-    })
+        })
+        .catch((err)=> {
+            res.status(500).send();
+        })
 });
 /**
  * @api {get} /exceptions Exceptions list
@@ -305,12 +268,14 @@ router.get('/notes', function (req, res, next) {
 router.get('/exceptions', function (req, res, next) {
     Exception.findAll({
         attributes: ['id', 'key', 'type'],
+        order: ['key']
     })
         .then((data)=> {
             res.json(data);
-        }).catch((err)=> {
-        res.status(500).send();
-    })
+        })
+        .catch((err)=> {
+            res.status(500).send();
+        })
 });
 
 /**
@@ -334,6 +299,9 @@ router.get('/exceptions', function (req, res, next) {
  * @apiSuccess (200) {Number}    events.tutor.timetableId  Tutor timetableId from http://planzajec.uek.krakow.pl
  * @apiSuccess (200) {String}    events.tutor.key          Tutor default name from http://planzajec.uek.krakow.pl
  * @apiSuccess (200) {String}    events.tutor.value        Tutor label from http://planzajec.uek.krakow.pl or custom
+ * @apiSuccess (200) {String}    events.tutor.forename     Tutor forename extracted
+ * @apiSuccess (200) {String}    events.tutor.surname      Tutor surname extracted
+ * @apiSuccess (200) {String}    events.tutor.prefix       Tutor prefix extracted
  * @apiSuccess (200) {Number}    events.tutor.moodleId     Tutor id to his account in https://e-uczelnia.uek.krakow.pl
  * @apiSuccess (200) {Number}    events.tutor.parentId     Tutor parent id
  *
@@ -375,59 +343,28 @@ router.get('/timetables/:timetables', (req, res, next)=> {
             include: [{
                 model: models.label,
                 as: 'tutor',
-                attributes: [
-                    'id',
-                    'timetableId',
-                    'key',
-                    'value',
-                    'moodleId',
-                    'parentId'
-                ]
+                attributes: ['id', 'timetableId', 'key', 'value', 'forename', 'surname', 'prefix', 'moodleId', 'parentId']
 
             }, {
                 model: models.label,
                 as: 'group',
-                attributes: [
-                    'id',
-                    'timetableId',
-                    'key',
-                    'value',
-                    'parentId'
-                ]
+                attributes: ['id', 'timetableId', 'key', 'value', 'parentId']
             }, {
                 model: models.label,
                 as: 'place',
-                attributes: [
-                    'id',
-                    'timetableId',
-                    'key',
-                    'value',
-                    'parentId'
-                ]
+                attributes: ['id', 'timetableId', 'key', 'value', 'parentId']
             }, {
                 model: models.label,
                 as: 'activity',
-                attributes: [
-                    'id',
-                    'key',
-                    'value'
-                ]
+                attributes: ['id', 'key', 'value']
             }, {
                 model: models.label,
                 as: 'note',
-                attributes: [
-                    'id',
-                    'key',
-                    'value'
-                ]
+                attributes: ['id', 'key', 'value']
             }, {
                 model: models.label,
                 as: 'type',
-                attributes: [
-                    'id',
-                    'key',
-                    'value'
-                ]
+                attributes: ['id', 'key', 'value']
             }],
             where: {
                 $or: {
@@ -435,7 +372,8 @@ router.get('/timetables/:timetables', (req, res, next)=> {
                     groupId: {$or: req.params.timetables.split(',')},
                     placeId: {$or: req.params.timetables.split(',')}
                 }
-            }
+            },
+            order: ['date', 'from']
         }).then((data)=> {
             res.json(data);
         })
