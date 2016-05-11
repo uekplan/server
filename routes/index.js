@@ -32,7 +32,7 @@ router.get('/', function (req, res, next) {
 router.get('/labels', function (req, res, next) {
 
     Label.findAll({
-        attributes: ['id', 'timetableId', 'key', 'value', 'type',  'forename', 'surname', 'prefix',  'moodleId', 'parentId'],
+        attributes: ['id', 'timetableId', 'key', 'value', 'type', 'forename', 'surname', 'prefix', 'moodleId', 'parentId'],
         // chceck in etl if needed
         where: {type: {$ne: '?'}},
         order: ['key']
@@ -298,7 +298,7 @@ router.get('/exceptions', function (req, res, next) {
  */
 router.post('/exceptions/add', function (req, res, next) {
     Exception.findOne({
-        attributes: ['id', 'key', 'type'],
+        attributes: ['key', 'type'],
         where: {id: req.body.id}
     })
         .then((data)=> {
@@ -306,7 +306,6 @@ router.post('/exceptions/add', function (req, res, next) {
                 data
                     .destroy()
                     .then(()=> {
-                        delete data.dataValues.id;
                         data.dataValues.orginal = false;
                         Label
                             .create(data.dataValues)
@@ -345,7 +344,7 @@ router.post('/exceptions/add', function (req, res, next) {
  */
 router.post('/exceptions/update', function (req, res, next) {
     Exception.findOne({
-        attributes: ['id', 'key', 'type'],
+        attributes: ['key', 'type'],
         where: {id: req.body.exceptionId}
     })
         .then((data)=> {
@@ -354,7 +353,12 @@ router.post('/exceptions/update', function (req, res, next) {
                     .destroy()
                     .then(()=> {
                         Label
-                            .update({value: data.dataValues.key}, {where: {id: req.body.labelId}})
+                            .update({value: data.dataValues.key}, {
+                                where: {
+                                    id: req.body.labelId,
+                                    type: data.dataValues.type
+                                }
+                            })
                             .then((data)=> {
                                 res.json(data);
                             })
@@ -489,6 +493,9 @@ router.get('/timetables/:timetables', (req, res, next)=> {
  * @apiSuccess (200) {Number}    tutors.timetableId   Tutor timetableId from http://planzajec.uek.krakow.pl
  * @apiSuccess (200) {String}    tutors.key           Tutor default name from http://planzajec.uek.krakow.pl
  * @apiSuccess (200) {String}    tutors.value         Tutor label from http://planzajec.uek.krakow.pl or custom
+ * @apiSuccess (200) {String}    tutors.forename     Tutor forename extracted
+ * @apiSuccess (200) {String}    tutors.surname      Tutor surname extracted
+ * @apiSuccess (200) {String}    tutors.prefix       Tutor prefix extracted
  * @apiSuccess (200) {Number}    tutors.moodleId      Tutor id to his account in https://e-uczelnia.uek.krakow.pl
  * @apiSuccess (200) {Number}    tutors.parentId      Tutor parent id
  */
@@ -504,6 +511,9 @@ router.get('/timetables/:timetables/tutors', (req, res, next)=> {
                 'timetableId',
                 'key',
                 'value',
+                'forename',
+                'surname',
+                'prefix',
                 'moodleId',
                 'parentId'
             ]
