@@ -261,10 +261,16 @@ router.get('/notes', function (req, res, next) {
 });
 /**
  * @api {get} /exceptions Exceptions list
+ * @apiPermission none
+ * @apiDescription Returns current exceptions list catched from http://planzajec.uek.krakow.pl
  * @apiName getExceptions
  * @apiGroup Exception
+ *
+ * @apiSuccess (200) {Object[]}  exceptions               Exceptions list
+ * @apiSuccess (200) {Number}    exceptions.id            Exception id
+ * @apiSuccess (200) {String}    exceptions.key           Exception value
+ * @apiSuccess (200) {String}    exceptions.type          Where exception ocurred
  */
-
 router.get('/exceptions', function (req, res, next) {
     Exception.findAll({
         attributes: ['id', 'key', 'type'],
@@ -277,6 +283,94 @@ router.get('/exceptions', function (req, res, next) {
             res.status(500).send();
         })
 });
+/**
+ * @api {post} /exceptions/add Add exception to labels
+ * @apiPermission none
+ * @apiDescription Add exception to labels
+ * @apiName addException
+ * @apiGroup Exception
+ *
+ * @apiParam {Number} id Exeption unique ID.
+ *
+ */
+router.post('/exceptions/add', function (req, res, next) {
+    Exception.findOne({
+        attributes: ['id', 'key', 'type'],
+        where: {id: req.body.id}
+    })
+        .then((data)=> {
+            if (data) {
+                data
+                    .destroy()
+                    .then(()=> {
+                        delete data.dataValues.id;
+                        data.dataValues.orginal = false;
+                        Label
+                            .create(data.dataValues)
+                            .then((data)=> {
+                                res.json(data);
+                            })
+                            .catch((err)=> {
+                                console.log(err);
+                                res.status(500).send();
+                            });
+                    }).catch((err)=> {
+                    console.log(err);
+                    res.status(500).send();
+                });
+            } else {
+                res.status(201).send();
+            }
+        })
+        .catch((err)=> {
+            console.log(err);
+            res.status(500).send();
+        });
+});
+
+/**
+ * @api {post} /exceptions/update Update Label value with tutor exception
+ * @apiPermission none
+ * @apiDescription Add exception to labels
+ * @apiName updateException
+ * @apiGroup Exception
+ *
+ * @apiParam {Number} exceptionId Exeption unique ID.
+ * @apiParam {Number} labelId Label unique ID.
+
+ *
+ */
+router.post('/exceptions/update', function (req, res, next) {
+    Exception.findOne({
+        attributes: ['id', 'key', 'type'],
+        where: {id: req.body.exceptionId}
+    })
+        .then((data)=> {
+            if (data) {
+                data
+                    .destroy()
+                    .then(()=> {
+                        Label
+                            .update({value: data.dataValues.key}, {where: {id: req.body.labelId}})
+                            .then((data)=> {
+                                res.json(data);
+                            })
+                            .catch((err)=> {
+                                res.status(500).send();
+                            });
+                    })
+                    .catch((err)=> {
+                        res.status(500).send();
+                    })
+            } else {
+                res.status(404).send();
+            }
+        })
+        .catch((err)=> {
+            res.status(500).send();
+        });
+});
+
 
 /**
  * @api {get} /timetables/:timetables Events for :timetables
@@ -537,19 +631,6 @@ router.get('/timetables/:timetables/rooms', (req, res, next)=> {
         console.log(err);
         res.sendStatus(500);
     })
-});
-
-
-router.delete('exception/:id', (req, res, next)=> {
-    Exception.destroy({
-        where: {
-            id: req.params.id
-        }
-    }).then(()=> {
-        res.status(204).send();
-    }).catch((err)=> {
-        res.status(500).send();
-    });
 });
 
 
