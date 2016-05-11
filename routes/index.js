@@ -23,13 +23,16 @@ router.get('/', function (req, res, next) {
  * @apiSuccess (200) {String}    labels.key           Label default name from http://planzajec.uek.krakow.pl
  * @apiSuccess (200) {String}    labels.value         Label label from http://planzajec.uek.krakow.pl or custom
  * @apiSuccess (200) {String}    labels.type          Label type
+ * @apiSuccess (200) {String}    labels.forename      Tutor forename extracted
+ * @apiSuccess (200) {String}    labels.surname       Tutor surname extracted
+ * @apiSuccess (200) {String}    labels.prefix        Tutor prefix extracted
  * @apiSuccess (200) {Number}    labels.moodleId      Label id to its account in https://e-uczelnia.uek.krakow.pl
  * @apiSuccess (200) {Number}    labels.parentId      Label parent id
  */
 router.get('/labels', function (req, res, next) {
 
     Label.findAll({
-        attributes: ['id', 'timetableId', 'key', 'value', 'type', 'moodleId', 'parentId'],
+        attributes: ['id', 'timetableId', 'key', 'value', 'type',  'forename', 'surname', 'prefix',  'moodleId', 'parentId'],
         // chceck in etl if needed
         where: {type: {$ne: '?'}},
         order: ['key']
