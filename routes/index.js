@@ -955,7 +955,7 @@ router.get('/events/:labels/activities', (req, res, next)=> {
     Event.findAll({
 
         attributes: [],
-        group: '`typeId`,`activityId`,`tutorId`,`groupId`',
+        group: '`typeId`,`activityId`',
         include: [{
             model: Label,
             as: 'tutor',
@@ -1009,6 +1009,7 @@ router.get('/events/:labels/activities', (req, res, next)=> {
 
 
         res.json(data);
+        
 
     }).catch((err)=> {
         console.log(err);
